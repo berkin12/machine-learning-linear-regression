@@ -129,17 +129,25 @@ reg_model.coef_
 # radio: 10
 # newspaper: 40
 
+#2.90 değeri sabitimiz reg_model.intercept_ ile bulduk
 # 2.90
+#katsayılarımız reg_model.coef_ ile bulduk
 # 0.0468431 , 0.17854434, 0.00258619
 
+#satışın beklenen değerlere göre gözlem değerinin model denklemi:
+#model denklemi önemli MÜLAKAT SORUSU!!! REGRESYON MODELİ
 # Sales = 2.90  + TV * 0.04 + radio * 0.17 + newspaper * 0.002
 
 2.90794702 + 30 * 0.0468431 + 10 * 0.17854434 + 40 * 0.00258619
+#ÇIKTI: 5.88
 
+#ŞİMDİ FONKSİYONLAŞTIRALIM
 yeni_veri = [[30], [10], [40]]
 yeni_veri = pd.DataFrame(yeni_veri).T
 
-reg_model.predict(yeni_veri)
+reg_model.predict(yeni_veri) #BU YENİ VERİ DATASI BAĞIMSIZ DEĞİŞKEN
+#OUT:6.20 (küsüratlardan dolayı)
+
 
 ##########################
 # Tahmin Başarısını Değerlendirme
@@ -148,19 +156,33 @@ reg_model.predict(yeni_veri)
 # Train RMSE
 y_pred = reg_model.predict(X_train)
 np.sqrt(mean_squared_error(y_train, y_pred))
-# 1.73
+# 1.73 
+#tek değişkenliyken 3.24'tü
 
-# TRAIN RKARE
+
+# TRAIN RKARE (bağımsız değişkenlerin bağımlı değişkeni etkileme oranıdır)
 reg_model.score(X_train, y_train)
+# 0.89 bu yükselen çıktı gösteriyor ki önceden 2 değişken vardı underfit etmişiz
+# hatamız azaldı başarı arttı
+
+#biz şimdi yukarıda train setine baktık ama bakılamaz diye bir kural yok görmüş olduk
+#asıl değerlendirmeyi test setiyle yapıcaz
+
 
 # Test RMSE
 y_pred = reg_model.predict(X_test)
 np.sqrt(mean_squared_error(y_test, y_pred))
-# 1.41
+# 1.41 !normalde train'in hatası test hatasından daha yüksek çıkar
+#şu anda da 1.73'e 1.41 demek ki biz güzel bi senaryonun içindeyiz
 
 # Test RKARE
 reg_model.score(X_test, y_test)
+#0.89 yakın çıktı öncekine 
+#bu çıktının anlamı veri setindeki bağımsız değişkenlerin;
+#bağımlı değişkeni açıklama yüzdesi 90 civarında
 
+#yukarıda yaptğımız holdout yöntemidir train ile modeli kurduk test ile denedik
+#bunun bir diğer alternatifi 10 katlı cross validation yöntemidir.
 
 # 10 Katlı CV RMSE
 np.mean(np.sqrt(-cross_val_score(reg_model,
@@ -170,15 +192,21 @@ np.mean(np.sqrt(-cross_val_score(reg_model,
                                  scoring="neg_mean_squared_error")))
 
 # 1.69
+#bütün veri kullanıldı burada train testinde kullanmama tercih edilir
+#eksi ile çarptık çünk negatif ortalama karesi buluyoruz.
+
+#bu senaryoda veri setinin boyutu ufak olduğu için,
+#10 katlı cross validation skoru daha güvenilir denilebilir
 
 
+#veri seti ufak 10 katlı yerine 5 katlı mı yapsak dersek;
 # 5 Katlı CV RMSE
 np.mean(np.sqrt(-cross_val_score(reg_model,
                                  X,
                                  y,
                                  cv=5,
                                  scoring="neg_mean_squared_error")))
-# 1.71
+# 1.71 bu çıktıda da çok fark olmadı
 
 
 
